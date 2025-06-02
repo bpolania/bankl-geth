@@ -40,6 +40,8 @@ import (
 	"github.com/holiman/uint256"
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 var (
 	key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 	address = crypto.PubkeyToAddress(key.PublicKey)
@@ -61,7 +63,7 @@ func initBackend(withLocal bool) *EthAPIBackend {
 		db     = rawdb.NewMemoryDatabase()
 		engine = beacon.New(ethash.NewFaker())
 	)
-	chain, _ := core.NewBlockChain(db, nil, gspec, nil, engine, vm.Config{}, nil)
+	chain, _ := core.NewBlockChain(db, nil, gspec, nil, engine, vm.Config{}, nil, path_to_addresses)
 
 	txconfig := legacypool.DefaultConfig
 	txconfig.Journal = "" // Don't litter the disk with test journals

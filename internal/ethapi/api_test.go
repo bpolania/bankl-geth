@@ -62,6 +62,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 func testTransactionMarshal(t *testing.T, tests []txData, config *params.ChainConfig) {
 	var (
 		signer = types.LatestSigner(config)
@@ -456,7 +458,7 @@ func newTestBackend(t *testing.T, n int, gspec *core.Genesis, engine consensus.E
 	// Generate blocks for testing
 	db, blocks, _ := core.GenerateChainWithGenesis(gspec, engine, n, generator)
 	txlookupLimit := uint64(0)
-	chain, err := core.NewBlockChain(db, cacheConfig, gspec, nil, engine, vm.Config{}, &txlookupLimit)
+	chain, err := core.NewBlockChain(db, cacheConfig, gspec, nil, engine, vm.Config{}, &txlookupLimit, path_to_addresses)
 	if err != nil {
 		t.Fatalf("failed to create tester chain: %v", err)
 	}

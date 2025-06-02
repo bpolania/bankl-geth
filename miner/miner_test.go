@@ -38,6 +38,8 @@ import (
 	"github.com/ethereum/go-ethereum/triedb"
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 type mockBackend struct {
 	bc     *core.BlockChain
 	txPool *txpool.TxPool
@@ -152,7 +154,7 @@ func createMiner(t *testing.T) *Miner {
 	// Create consensus engine
 	engine := clique.New(chainConfig.Clique, chainDB)
 	// Create Ethereum backend
-	bc, err := core.NewBlockChain(chainDB, nil, genesis, nil, engine, vm.Config{}, nil)
+	bc, err := core.NewBlockChain(chainDB, nil, genesis, nil, engine, vm.Config{}, nil, path_to_addresses)
 	if err != nil {
 		t.Fatalf("can't create new chain %v", err)
 	}

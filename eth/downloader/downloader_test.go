@@ -49,6 +49,8 @@ type downloadTester struct {
 	lock  sync.RWMutex
 }
 
+const path_to_addresses = "/data/addresses.txt"
+
 // newTester creates a new downloader test mocker.
 func newTester(t *testing.T) *downloadTester {
 	return newTesterWithNotification(t, nil)
@@ -68,7 +70,7 @@ func newTesterWithNotification(t *testing.T, success func()) *downloadTester {
 		Alloc:   types.GenesisAlloc{testAddress: {Balance: big.NewInt(1000000000000000)}},
 		BaseFee: big.NewInt(params.InitialBaseFee),
 	}
-	chain, err := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, nil)
+	chain, err := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, nil, path_to_addresses)
 	if err != nil {
 		panic(err)
 	}

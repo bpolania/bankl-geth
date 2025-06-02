@@ -38,6 +38,8 @@ import (
 	"github.com/ethereum/go-ethereum/triedb"
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 func makeReceipt(addr common.Address) *types.Receipt {
 	receipt := types.NewReceipt(nil, false, 0)
 	receipt.Logs = []*types.Log{
@@ -278,7 +280,7 @@ func testFilters(t *testing.T, history uint64, noHistory bool) {
 		}
 	})
 	var l uint64
-	bc, err := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, &l)
+	bc, err := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, &l, path_to_addresses)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -435,7 +437,7 @@ func TestRangeLogs(t *testing.T) {
 	}
 	chain, _ := core.GenerateChain(gspec.Config, gspec.ToBlock(), ethash.NewFaker(), db, 1000, func(i int, gen *core.BlockGen) {})
 	var l uint64
-	bc, err := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, &l)
+	bc, err := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, &l, path_to_addresses)
 	if err != nil {
 		t.Fatal(err)
 	}

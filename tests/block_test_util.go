@@ -46,6 +46,8 @@ import (
 	"github.com/ethereum/go-ethereum/triedb/pathdb"
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 // A BlockTest checks handling of entire blocks.
 type BlockTest struct {
 	json btJSON
@@ -159,7 +161,7 @@ func (t *BlockTest) Run(snapshotter bool, scheme string, witness bool, tracer *t
 	chain, err := core.NewBlockChain(db, cache, gspec, nil, engine, vm.Config{
 		Tracer:                  tracer,
 		StatelessSelfValidation: witness,
-	}, nil)
+	}, nil, path_to_addresses)
 	if err != nil {
 		return err
 	}

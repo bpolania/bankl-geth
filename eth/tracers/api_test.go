@@ -55,6 +55,8 @@ var (
 	errBlockNotFound = errors.New("block not found")
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 type testBackend struct {
 	chainConfig *params.ChainConfig
 	engine      consensus.Engine
@@ -84,7 +86,7 @@ func newTestBackend(t *testing.T, n int, gspec *core.Genesis, generator func(i i
 		SnapshotLimit:     0,
 		TrieDirtyDisabled: true, // Archive mode
 	}
-	chain, err := core.NewBlockChain(backend.chaindb, cacheConfig, gspec, nil, backend.engine, vm.Config{}, nil)
+	chain, err := core.NewBlockChain(backend.chaindb, cacheConfig, gspec, nil, backend.engine, vm.Config{}, nil, path_to_addresses)
 	if err != nil {
 		t.Fatalf("failed to create tester chain: %v", err)
 	}
@@ -1151,7 +1153,7 @@ func newTestMergedBackend(t *testing.T, n int, gspec *core.Genesis, generator fu
 		SnapshotLimit:     0,
 		TrieDirtyDisabled: true, // Archive mode
 	}
-	chain, err := core.NewBlockChain(backend.chaindb, cacheConfig, gspec, nil, backend.engine, vm.Config{}, nil)
+	chain, err := core.NewBlockChain(backend.chaindb, cacheConfig, gspec, nil, backend.engine, vm.Config{}, nil, path_to_addresses)
 	if err != nil {
 		t.Fatalf("failed to create tester chain: %v", err)
 	}

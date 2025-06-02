@@ -37,6 +37,8 @@ import (
 	fuzz "github.com/google/gofuzz"
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 func FuzzARange(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		doFuzz(data, &GetAccountRangePacket{}, GetAccountRangeMsg)
@@ -126,7 +128,7 @@ func getChain() *core.BlockChain {
 		SnapshotWait:        true,
 	}
 	trieRoot = blocks[len(blocks)-1].Root()
-	bc, _ := core.NewBlockChain(rawdb.NewMemoryDatabase(), cacheConf, gspec, nil, ethash.NewFaker(), vm.Config{}, nil)
+	bc, _ := core.NewBlockChain(rawdb.NewMemoryDatabase(), cacheConf, gspec, nil, ethash.NewFaker(), vm.Config{}, nil, path_to_addresses)
 	if _, err := bc.InsertChain(blocks); err != nil {
 		panic(err)
 	}

@@ -54,6 +54,8 @@ var (
 	testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
 )
 
+const path_to_addresses = "/data/addresses.txt"
+
 func u64(val uint64) *uint64 { return &val }
 
 // testBackend is a mock implementation of the live Ethereum message handler. Its
@@ -120,7 +122,7 @@ func newTestBackendWithGenerator(blocks int, shanghai bool, cancun bool, generat
 		Alloc:      types.GenesisAlloc{testAddr: {Balance: big.NewInt(100_000_000_000_000_000)}},
 		Difficulty: common.Big0,
 	}
-	chain, _ := core.NewBlockChain(db, nil, gspec, nil, engine, vm.Config{}, nil)
+	chain, _ := core.NewBlockChain(db, nil, gspec, nil, engine, vm.Config{}, nil, path_to_addresses)
 
 	_, bs, _ := core.GenerateChainWithGenesis(gspec, engine, blocks, generator)
 	if _, err := chain.InsertChain(bs); err != nil {

@@ -67,6 +67,8 @@ type supplyInfo struct {
 
 func emptyBlockGenerationFunc(b *core.BlockGen) {}
 
+const path_to_addresses = "/data/addresses.txt"
+
 func TestSupplyOmittedFields(t *testing.T) {
 	var (
 		config = *params.MergedTestChainConfig
@@ -554,7 +556,7 @@ func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(*core.BlockG
 		return nil, nil, fmt.Errorf("failed to create call tracer: %v", err)
 	}
 
-	chain, err := core.NewBlockChain(rawdb.NewMemoryDatabase(), core.DefaultCacheConfigWithScheme(rawdb.PathScheme), genesis, nil, engine, vm.Config{Tracer: tracer}, nil)
+	chain, err := core.NewBlockChain(rawdb.NewMemoryDatabase(), core.DefaultCacheConfigWithScheme(rawdb.PathScheme), genesis, nil, engine, vm.Config{Tracer: tracer}, nil, path_to_addresses)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create tester chain: %v", err)
 	}
