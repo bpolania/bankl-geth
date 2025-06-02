@@ -16,10 +16,15 @@ func NewFilterAPI(eth *Ethereum) *FilterAPI {
 	return &FilterAPI{eth: eth}
 }
 
-// UpdateAddresses updates the list of monitored addresses
+// UpdateAddresses updates the list of monitored addresses (runtime API call)
 func (api *FilterAPI) UpdateAddresses(addresses []string) error {
 	api.eth.blockchain.UpdateFilterAddresses(addresses)
 	return nil
+}
+
+// ReloadAddresses manually reloads addresses from the configured file
+func (api *FilterAPI) ReloadAddresses() error {
+	return api.eth.blockchain.ReloadFilterAddresses()
 }
 
 // GetFilterStats returns current filtering statistics

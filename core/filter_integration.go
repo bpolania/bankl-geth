@@ -108,12 +108,22 @@ func (bf *BlockFilter) FilterBlock(block *types.Block, receipts types.Receipts) 
 	}
 }
 
-// UpdateAddresses updates the monitored addresses
+// UpdateAddresses updates the monitored addresses (for API calls)
 func (bf *BlockFilter) UpdateAddresses(addresses []string) {
 	if bf.addressFilter != nil {
 		bf.addressFilter.UpdateAddresses(addresses)
 		bf.enabled = bf.addressFilter.IsEnabled()
 	}
+}
+
+// ReloadFromFile triggers a manual reload from the address file
+func (bf *BlockFilter) ReloadFromFile() error {
+	if bf.addressFilter != nil {
+		err := bf.addressFilter.ReloadFromFile()
+		bf.enabled = bf.addressFilter.IsEnabled()
+		return err
+	}
+	return nil
 }
 
 // GetFilterStats returns current filtering statistics
@@ -122,7 +132,7 @@ func (bf *BlockFilter) GetFilterStats() map[string]interface{} {
 		return map[string]interface{}{"enabled": false}
 	}
 
-	checked, matched, updates, addressCount := bf.addressFilter.GetMetrics()
+	checked, matched, updates, fileReloads, addressCount := bf.addressFilter.GetMetrics()
 
 	var matchRate float64
 	if checked > 0 {
@@ -132,9 +142,11 @@ func (bf *BlockFilter) GetFilterStats() map[string]interface{} {
 	return map[string]interface{}{
 		"enabled":              bf.enabled,
 		"address_count":        addressCount,
+		"address_file":         bf.addressFilter.GetAddressFile(),
 		"transactions_checked": checked,
 		"transactions_matched": matched,
 		"match_rate_percent":   matchRate,
-		"total_updates":        updates,
+		"api_updates":          updates,
+		"file_reloads":         fileReloads,
 	}
 }

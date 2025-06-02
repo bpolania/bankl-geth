@@ -297,7 +297,7 @@ type BlockChain struct {
 // NewBlockChain returns a fully initialised block chain using information
 // available in the database. It initialises the default Ethereum Validator
 // and Processor.
-func NewBlockChain(db ethdb.Database, cacheConfig *CacheConfig, genesis *Genesis, overrides *ChainOverrides, engine consensus.Engine, vmConfig vm.Config, txLookupLimit *uint64, filterAddresses []string) (*BlockChain, error) {
+func NewBlockChain(db ethdb.Database, cacheConfig *CacheConfig, genesis *Genesis, overrides *ChainOverrides, engine consensus.Engine, vmConfig vm.Config, txLookupLimit *uint64, filterAddressFile string) (*BlockChain, error) {
 	if cacheConfig == nil {
 		cacheConfig = defaultCacheConfig
 	}
@@ -325,11 +325,10 @@ func NewBlockChain(db ethdb.Database, cacheConfig *CacheConfig, genesis *Genesis
 	log.Info("")
 
 	var blockFilter *BlockFilter
-	if len(filterAddresses) > 0 {
-		addressFilter := NewDynamicAddressFilter(chainConfig)
-		addressFilter.UpdateAddresses(filterAddresses)
+	if filterAddressFile != "" {
+		addressFilter := NewDynamicAddressFilter(chainConfig, filterAddressFile)
 		blockFilter = NewBlockFilter(addressFilter)
-		log.Info("Block filtering enabled", "addresses", len(filterAddresses))
+		log.Info("Block filtering enabled", "file", filterAddressFile)
 	}
 
 	bc := &BlockChain{
@@ -513,14 +512,20 @@ func (bc *BlockChain) GetFilteredBlockData(blockNumber uint64) *FilteredBlockDat
 	return bc.blockFilter.FilterBlock(block, receipts)
 }
 
-// Add method to update addresses at runtime
+// Add method to manually reload addresses from file
+func (bc *BlockChain) ReloadFilterAddresses() error {
+	if bc.blockFilter != nil {
+		return bc.blockFilter.ReloadFromFile()
+	}
+	return fmt.Errorf("address filtering not enabled")
+}
+
 func (bc *BlockChain) UpdateFilterAddresses(addresses []string) {
 	if bc.blockFilter != nil {
 		bc.blockFilter.UpdateAddresses(addresses)
 	}
 }
 
-// Add method to get filter statistics
 func (bc *BlockChain) GetFilterStats() map[string]interface{} {
 	if bc.blockFilter != nil {
 		return bc.blockFilter.GetFilterStats()
