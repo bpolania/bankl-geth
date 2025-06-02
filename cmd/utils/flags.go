@@ -961,6 +961,17 @@ Please note that --` + MetricsHTTPFlag.Name + ` must be set to start the server.
 		Value:    metrics.DefaultConfig.InfluxDBOrganization,
 		Category: flags.MetricsCategory,
 	}
+
+	FilterAddressFileFlag = &cli.StringFlag{
+		Name:     "filter.address-file",
+		Usage:    "Path to file containing addresses to filter (one address per line)",
+		Category: flags.EthCategory,
+	}
+	FilterEnabledFlag = &cli.BoolFlag{
+		Name:     "filter.enabled",
+		Usage:    "Enable transaction address filtering",
+		Category: flags.EthCategory,
+	}
 )
 
 var (
@@ -2218,8 +2229,14 @@ func MakeChain(ctx *cli.Context, stack *node.Node, readonly bool) (*core.BlockCh
 			vmcfg.Tracer = t
 		}
 	}
+	// Get filter address file from CLI context
+	var filterAddressFile string
+	if ctx.IsSet(FilterAddressFileFlag.Name) {
+		filterAddressFile = ctx.String(FilterAddressFileFlag.Name)
+	}
+
 	// Disable transaction indexing/unindexing by default.
-	chain, err := core.NewBlockChain(chainDb, cache, gspec, nil, engine, vmcfg, nil)
+	chain, err := core.NewBlockChain(chainDb, cache, gspec, nil, engine, vmcfg, nil, filterAddressFile)
 	if err != nil {
 		Fatalf("Can't create BlockChain: %v", err)
 	}
