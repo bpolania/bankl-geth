@@ -457,8 +457,11 @@ func (tt *cliqueTest) run(t *testing.T) {
 		}
 		batches[len(batches)-1] = append(batches[len(batches)-1], block)
 	}
+
+	const path_to_addresses = "/data/addresses.txt"
+
 	// Pass all the headers through clique and ensure tallying succeeds
-	chain, err := core.NewBlockChain(rawdb.NewMemoryDatabase(), nil, genesis, nil, engine, vm.Config{}, nil)
+	chain, err := core.NewBlockChain(rawdb.NewMemoryDatabase(), nil, genesis, nil, engine, vm.Config{}, nil, path_to_addresses)
 	if err != nil {
 		t.Fatalf("failed to create test chain: %v", err)
 	}

@@ -77,8 +77,10 @@ func TestHistoryImportAndExport(t *testing.T) {
 		g.AddTx(tx)
 	})
 
+	const path_to_addresses = "/data/addresses.txt"
+
 	// Initialize BlockChain.
-	chain, err := core.NewBlockChain(db, nil, genesis, nil, ethash.NewFaker(), vm.Config{}, nil)
+	chain, err := core.NewBlockChain(db, nil, genesis, nil, ethash.NewFaker(), vm.Config{}, nil, path_to_addresses)
 	if err != nil {
 		t.Fatalf("unable to initialize chain: %v", err)
 	}
@@ -167,7 +169,7 @@ func TestHistoryImportAndExport(t *testing.T) {
 	})
 
 	genesis.MustCommit(db2, triedb.NewDatabase(db2, triedb.HashDefaults))
-	imported, err := core.NewBlockChain(db2, nil, genesis, nil, ethash.NewFaker(), vm.Config{}, nil)
+	imported, err := core.NewBlockChain(db2, nil, genesis, nil, ethash.NewFaker(), vm.Config{}, nil, path_to_addresses)
 	if err != nil {
 		t.Fatalf("unable to initialize chain: %v", err)
 	}

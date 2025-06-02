@@ -64,8 +64,10 @@ func newTestEnv(t *testing.T, n int, gasTip uint64, journal string) *testEnv {
 		gen.AddTx(tx)
 	})
 
+	const path_to_addresses = "/data/addresses.txt"
+
 	db := rawdb.NewMemoryDatabase()
-	chain, _ := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, nil)
+	chain, _ := core.NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, nil, path_to_addresses)
 
 	legacyPool := legacypool.New(legacypool.DefaultConfig, chain)
 	pool, err := txpool.New(gasTip, chain, []txpool.SubPool{legacyPool})

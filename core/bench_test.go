@@ -198,9 +198,11 @@ func benchInsertChain(b *testing.B, disk bool, gen func(int, *BlockGen)) {
 	}
 	_, chain, _ := GenerateChainWithGenesis(gspec, ethash.NewFaker(), b.N, gen)
 
+	const path_to_addresses = "/data/addresses.txt"
+
 	// Time the insertion of the new chain.
 	// State and blocks are stored in the same DB.
-	chainman, _ := NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, nil)
+	chainman, _ := NewBlockChain(db, nil, gspec, nil, ethash.NewFaker(), vm.Config{}, nil, path_to_addresses)
 	defer chainman.Stop()
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -331,6 +333,8 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
+	const path_to_addresses = "/data/addresses.txt"
+
 	for i := 0; i < b.N; i++ {
 		pdb, err = pebble.New(dir, 1024, 128, "", false)
 		if err != nil {
@@ -338,7 +342,7 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 		}
 		db = rawdb.NewDatabase(pdb)
 
-		chain, err := NewBlockChain(db, &cacheConfig, genesis, nil, ethash.NewFaker(), vm.Config{}, nil)
+		chain, err := NewBlockChain(db, &cacheConfig, genesis, nil, ethash.NewFaker(), vm.Config{}, nil, path_to_addresses)
 		if err != nil {
 			b.Fatalf("error creating chain: %v", err)
 		}
