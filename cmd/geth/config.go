@@ -183,13 +183,14 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 	}
 
 	// Configure address filtering
-	var filterAddresses []string
-	if ctx.Bool(FilterEnabledFlag.Name) || ctx.IsSet(FilterAddressesFlag.Name) {
-		filterAddresses = ctx.StringSlice(FilterAddressesFlag.Name)
+	var filterAddressFile string
+	if ctx.Bool(utils.FilterEnabledFlag.Name) || ctx.IsSet(utils.FilterAddressFileFlag.Name) {
+		filterAddressFile = ctx.String(utils.FilterAddressFileFlag.Name)
 	}
+	cfg.Eth.FilterAddressFile = filterAddressFile
 
 	// Pass to blockchain config
-	cfg.Eth.FilterAddresses = filterAddresses
+	cfg.Eth.FilterAddressFile = filterAddressFile
 
 	utils.SetEthConfig(ctx, stack, &cfg.Eth)
 	if ctx.IsSet(utils.EthStatsURLFlag.Name) {

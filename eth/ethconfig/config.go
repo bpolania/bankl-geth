@@ -164,7 +164,7 @@ type Config struct {
 	OverrideVerkle *uint64 `toml:",omitempty"`
 
 	// Address filtering
-	FilterAddresses []string `toml:",omitempty"`
+	FilterAddressFile string `toml:",omitempty"`
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain config.

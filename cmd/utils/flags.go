@@ -1859,6 +1859,11 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			cfg.VMTraceJsonConfig = ctx.String(VMTraceJsonConfigFlag.Name)
 		}
 	}
+
+	// Address filtering config
+	if ctx.IsSet(FilterAddressFileFlag.Name) {
+		cfg.FilterAddressFile = ctx.String(FilterAddressFileFlag.Name)
+	}
 }
 
 // MakeBeaconLightConfig constructs a beacon light client config based on the
