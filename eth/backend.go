@@ -354,6 +354,9 @@ func (s *Ethereum) APIs() []rpc.API {
 		}, {
 			Namespace: "net",
 			Service:   s.netRPCService,
+		}, {
+			Namespace: "filter",        // Add this
+			Service:   NewFilterAPI(s), // Add this
 		},
 	}...)
 }

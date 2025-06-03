@@ -38,8 +38,14 @@ func (api *FilterAPI) GetFilteredBlock(ctx context.Context, blockNumber uint64) 
 }
 
 // GetFilteredBlocks returns filtered transaction data for a range of blocks
+// set `to` to zero to use the latest block
 func (api *FilterAPI) GetFilteredBlocks(ctx context.Context, fromBlock, toBlock uint64) []*core.FilteredBlockData {
 	var results []*core.FilteredBlockData
+
+	// If toBlock is 0, use latest block
+	if toBlock == 0 {
+		toBlock = api.eth.blockchain.CurrentBlock().Number.Uint64()
+	}
 
 	for blockNum := fromBlock; blockNum <= toBlock; blockNum++ {
 		if filtered := api.eth.blockchain.GetFilteredBlockData(blockNum); filtered != nil {

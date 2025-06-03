@@ -151,6 +151,8 @@ var (
 		utils.BeaconGenesisTimeFlag,
 		utils.BeaconCheckpointFlag,
 		utils.BeaconCheckpointFileFlag,
+		utils.FilterAddressFileFlag,
+		utils.FilterEnabledFlag,
 	}, utils.NetworkFlags, utils.DatabaseFlags)
 
 	rpcFlags = []cli.Flag{

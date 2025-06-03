@@ -45,13 +45,13 @@ func NewBlockFilter(addressFilter *DynamicAddressFilter) *BlockFilter {
 
 // FilterBlock processes a block and returns only transactions involving monitored addresses
 func (bf *BlockFilter) FilterBlock(block *types.Block, receipts types.Receipts) *FilteredBlockData {
+
 	if !bf.enabled || !bf.addressFilter.IsEnabled() {
 		return nil // No filtering needed
 	}
 
 	startTime := time.Now()
 	filteredTxs := make([]*FilteredTransaction, 0)
-
 	// Process each transaction in the block
 	for i, tx := range block.Transactions() {
 		if bf.addressFilter.ShouldInclude(tx) {
@@ -131,7 +131,6 @@ func (bf *BlockFilter) GetFilterStats() map[string]interface{} {
 	if bf.addressFilter == nil {
 		return map[string]interface{}{"enabled": false}
 	}
-
 	checked, matched, updates, fileReloads, addressCount := bf.addressFilter.GetMetrics()
 
 	var matchRate float64

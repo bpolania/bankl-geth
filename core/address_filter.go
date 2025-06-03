@@ -207,29 +207,44 @@ func (df *DynamicAddressFilter) loadAddressesFromFile(filePath string) error {
 // ShouldInclude checks if a transaction involves any monitored addresses
 // This is the hot path - must be extremely fast with zero locks
 func (df *DynamicAddressFilter) ShouldInclude(tx *types.Transaction) bool {
-	// Atomic load - no locks, no waiting!
+
 	setPtr := atomic.LoadPointer(&df.currentSet)
 	if setPtr == nil {
-		return false // No addresses configured
+		fmt.Printf("No address set loaded\n")
+		return false
 	}
 
 	addressSet := (*AddressSet)(setPtr)
 	if addressSet.count == 0 {
-		return false // Empty address set
+		fmt.Printf("Empty address set\n")
+		return false
 	}
 
-	atomic.AddUint64(&df.totalChecked, 1)
+	// Try to increment and immediately read back
+	oldChecked := atomic.LoadUint64(&df.totalChecked)
+	newChecked := atomic.AddUint64(&df.totalChecked, 1)
+	readBack := atomic.LoadUint64(&df.totalChecked)
 
-	// Check recipient first (fast - already available)
+	fmt.Printf("Atomic operation: old=%d, new=%d, readback=%d\n", oldChecked, newChecked, readBack)
+
+	// Check recipient
 	if tx.To() != nil && addressSet.addresses[*tx.To()] {
-		atomic.AddUint64(&df.totalMatched, 1)
+		oldMatched := atomic.LoadUint64(&df.totalMatched)
+		newMatched := atomic.AddUint64(&df.totalMatched, 1)
+		readBackMatched := atomic.LoadUint64(&df.totalMatched)
+
+		fmt.Printf("MATCH! Atomic operation: old=%d, new=%d, readback=%d\n", oldMatched, newMatched, readBackMatched)
 		return true
 	}
 
-	// Check sender (requires signature recovery - more expensive)
+	// Check sender
 	if sender, err := types.Sender(df.signer, tx); err == nil {
 		if addressSet.addresses[sender] {
-			atomic.AddUint64(&df.totalMatched, 1)
+			oldMatched := atomic.LoadUint64(&df.totalMatched)
+			newMatched := atomic.AddUint64(&df.totalMatched, 1)
+			readBackMatched := atomic.LoadUint64(&df.totalMatched)
+
+			fmt.Printf("SENDER MATCH! Atomic operation: old=%d, new=%d, readback=%d\n", oldMatched, newMatched, readBackMatched)
 			return true
 		}
 	}
@@ -306,11 +321,15 @@ func (df *DynamicAddressFilter) GetMetrics() (checked, matched, updates, fileRel
 		count = addressSet.count
 	}
 
-	return atomic.LoadUint64(&df.totalChecked),
-		atomic.LoadUint64(&df.totalMatched),
-		atomic.LoadUint64(&df.updateCount),
-		atomic.LoadUint64(&df.fileReloads),
-		count
+	checked = atomic.LoadUint64(&df.totalChecked)
+	matched = atomic.LoadUint64(&df.totalMatched)
+	updates = atomic.LoadUint64(&df.updateCount)
+	fileReloads = atomic.LoadUint64(&df.fileReloads)
+
+	fmt.Printf("GetMetrics called: checked=%d, matched=%d, updates=%d, fileReloads=%d, addressCount=%d\n",
+		checked, matched, updates, fileReloads, count)
+
+	return checked, matched, updates, fileReloads, count
 }
 
 // IsEnabled returns true if the filter has addresses configured
